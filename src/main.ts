@@ -18,7 +18,15 @@ let counter: number = 0;
 const countDisplay = document.createElement("div");
 countDisplay.innerHTML = `ants: ${counter}`;
 button.addEventListener("click", () => {
-    counter++;
-    countDisplay.innerHTML = `ants: ${counter}`;
+    increaseCounter();
 });
 app.append(countDisplay);
+
+function increaseCounter(){
+    counter++;
+    countDisplay.innerHTML = `ants: ${counter}`;
+}
+
+const seconds = 1;
+const interval: number = 1000 * seconds;
+setInterval(increaseCounter, interval);
