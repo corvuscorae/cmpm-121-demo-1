@@ -19,36 +19,35 @@ app.append(button);
 let counter: number = 0;
 const countDisplay = document.createElement("div");
 countDisplay.innerHTML = `ants: ${counter}`;
+app.append(countDisplay);
 
 // increase count -- helper fcn
-function increaseCounter() {
-  counter++;
-  countDisplay.innerHTML = `ants: ${counter}`;
+function increaseCounter(amount: number) {
+  counter += amount;
+  countDisplay.innerHTML = `ants: ${Math.round(counter)}`;
 }
 
 // increase count -- click button
 button.addEventListener("click", () => {
-  increaseCounter();
+  increaseCounter(1);
 });
-app.append(countDisplay);
 
 // increase count -- automatic
 let lastTime: number = 0;
-function updateCounter(timestamp: number){
-    if(lastTime){
-        // Calculate time since last frame
-        const deltaTime = timestamp - lastTime;
-        // Increment counter based on time: 1 unit per 1000 ms (1 second)
-        counter += deltaTime / 1000;
-    }
+function autoCounter(timestamp: number) {
+  if (lastTime) {
+    // Calculate time since last frame
+    const deltaTime = timestamp - lastTime;
+    // Increment counter based on time: 1 unit per 1000 ms (1 second)
+    increaseCounter(deltaTime / 1000);
+  }
 
-    // Update the last time
-    lastTime = timestamp;
-    
-    // Continue the animation loop
-    requestAnimationFrame(updateCounter);
+  // Update the last time
+  lastTime = performance.now();
+
+  // Continue the animation loop
+  requestAnimationFrame(autoCounter);
 }
 
-
 // Start the animation loop
-requestAnimationFrame(updateCounter);
+requestAnimationFrame(autoCounter);
