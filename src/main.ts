@@ -32,7 +32,7 @@ function editCount(amount: number) {
 
 // increase count -- click button
 button.addEventListener("click", () => {
-    editCount(1);
+  editCount(1);
 });
 
 // increase count -- automatic
@@ -63,7 +63,8 @@ upgradeButton.innerHTML = upgradeText;
 app.append(upgradeButton);
 
 // purchase upgrade
+const upgradeCost: number = 10;
 upgradeButton.addEventListener("click", () => {
-  editCount(-10);
+  editCount(-upgradeCost);
   growthRate++;
 });
