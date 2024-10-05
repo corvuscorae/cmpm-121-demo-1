@@ -21,36 +21,36 @@ const countDisplay = document.createElement("div");
 countDisplay.innerHTML = `ants: ${counter}`;
 app.append(countDisplay);
 
-// increase count -- helper fcn
-function increaseCounter(amount: number) {
-    counter += amount;
-    countDisplay.innerHTML = `ants: ${Math.round(counter)}`;
+// count -- helper fcn
+function editCount(amount: number) {
+  counter += amount;
+  countDisplay.innerHTML = `ants: ${Math.round(counter)}`;
 
-    // handle upgrade button usability
-    upgradeButton.disabled = (counter < 10);
+  // handle upgrade button usability
+  upgradeButton.disabled = counter < 10;
 }
 
 // increase count -- click button
 button.addEventListener("click", () => {
-    increaseCounter(1);
+    editCount(1);
 });
 
 // increase count -- automatic
 let lastTime: number = 0;
 let growthRate: number = 0;
 function autoCounter(timestamp: number) {
-    if (lastTime) {
-        // Calculate time since last frame
-        const deltaTime = timestamp - lastTime;
-        // Increment counter based on time: 1 unit per 1000 ms (1 second)
-        increaseCounter(deltaTime / 1000 * growthRate);
-    }
+  if (lastTime) {
+    // Calculate time since last frame
+    const deltaTime = timestamp - lastTime;
+    // Increment counter based on time: 1 unit per 1000 ms (1 second)
+    editCount((deltaTime / 1000) * growthRate);
+  }
 
-    // Update the last time
-    lastTime = performance.now();
+  // Update the last time
+  lastTime = performance.now();
 
-    // Continue the animation loop
-    requestAnimationFrame(autoCounter);
+  // Continue the animation loop
+  requestAnimationFrame(autoCounter);
 }
 
 // Start the animation loop
@@ -64,6 +64,6 @@ app.append(upgradeButton);
 
 // purchase upgrade
 upgradeButton.addEventListener("click", () => {
-    increaseCounter(-10);
-    growthRate++;
+  editCount(-10);
+  growthRate++;
 });
