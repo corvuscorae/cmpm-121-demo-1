@@ -18,7 +18,7 @@ let counter: number = 0;
 const countDisplay = document.createElement("div");
 countDisplay.innerHTML = `ants: ${counter}`;
 button.addEventListener("click", () => {
-    counter++;
-    countDisplay.innerHTML = `ants: ${counter}`;
+  counter++;
+  countDisplay.innerHTML = `ants: ${counter}`;
 });
 app.append(countDisplay);
