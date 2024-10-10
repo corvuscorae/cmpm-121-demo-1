@@ -9,8 +9,8 @@ const header = document.createElement("h1");
 header.innerHTML = gameName;
 app.append(header);
 
-// make ant button
-const buttonText = "🐜";
+// make bee button
+const buttonText = "🐝";
 const button = document.createElement("button");
 button.innerHTML = buttonText;
 app.append(button);
@@ -18,16 +18,16 @@ app.append(button);
 // show count
 let counter: number = 0;
 const countDisplay = document.createElement("div");
-countDisplay.innerHTML = `ants: ${counter}`;
+countDisplay.innerHTML = `bees: ${counter}`;
 app.append(countDisplay);
 
 // count -- helper fcn
 function editCount(amount: number) {
   counter += amount;
-  countDisplay.innerHTML = `ants: ${Math.round(counter)}`;
+  countDisplay.innerHTML = `bees: ${Math.round(counter)}`;
 
   // handle upgrade button usability
-  upgradeButton.disabled = counter < 10;
+  upgradeButtonA.button.disabled = counter < 10;
 }
 
 // increase count -- click button
@@ -56,15 +56,33 @@ function autoCounter(timestamp: number) {
 // Start the animation loop
 requestAnimationFrame(autoCounter);
 
+// upgrade button interface
+interface upgradeButton {
+  button: HTMLButtonElement;
+  cost: number;
+  unitsPerSec: number;
+}
+
 // upgrade for automation -- increase growthRate
 const upgradeText = "👑";
-const upgradeButton = document.createElement("button");
-upgradeButton.innerHTML = upgradeText;
-app.append(upgradeButton);
+const upgradeButtonA: upgradeButton = {
+  button: document.createElement("button"), 
+  cost: 10, 
+  unitsPerSec: 0.1
+};
+upgradeButtonA.button.innerHTML = upgradeText;
+app.append(upgradeButtonA.button);
+
 
 // purchase upgrade
 const upgradeCost: number = 10;
-upgradeButton.addEventListener("click", () => {
+upgradeButtonA.button.addEventListener("click", () => {
   editCount(-upgradeCost);
   growthRate++;
 });
+/*
+function upgrade(cost: number){
+  const rate: number = cost;
+  return rate / 100;
+}
+*/
