@@ -59,29 +59,32 @@ requestAnimationFrame(autoCounter);
 // upgrade button interface
 interface upgradeButton {
   button: HTMLButtonElement;
+  text: string;
   cost: number;
-  unitsPerSec: number;
+  rate: number;
+}
+
+// upgrade handler -- deduct cost and adjust growth rate
+function upgradeHandler(thisButton: upgradeButton){
+  editCount(-thisButton.cost);
+  growthRate += thisButton.rate;
 }
 
 // upgrade for automation -- increase growthRate
-const upgradeText = "👑";
-const upgradeButtonA: upgradeButton = {
-  button: document.createElement("button"),
-  cost: 10,
-  unitsPerSec: 0.1,
-};
-upgradeButtonA.button.innerHTML = upgradeText;
-app.append(upgradeButtonA.button);
+// make upgrade buttons
+function makeUpgrade(t: string, c: number, r: number){
+  const result: upgradeButton = {
+    button: document.createElement("button"),
+    text: t,
+    cost: c,
+    rate: r,
+  };
+  result.button.innerHTML = result.text;
+  app.append(result.button);
+  return result;
+}
+
+const upgradeButtonA = makeUpgrade("👑", 10, 0.1);
 
 // purchase upgrade
-const upgradeCost: number = 10;
-upgradeButtonA.button.addEventListener("click", () => {
-  editCount(-upgradeCost);
-  growthRate++;
-});
-/*
-function upgrade(cost: number){
-  const rate: number = cost;
-  return rate / 100;
-}
-*/
+upgradeButtonA.button.addEventListener("click", () => { upgradeHandler(upgradeButtonA); });
