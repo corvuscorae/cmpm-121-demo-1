@@ -65,14 +65,14 @@ interface upgradeButton {
 }
 
 // upgrade handler -- deduct cost and adjust growth rate
-function upgradeHandler(thisButton: upgradeButton){
+function upgradeHandler(thisButton: upgradeButton) {
   editCount(-thisButton.cost);
   growthRate += thisButton.rate;
 }
 
 // upgrade for automation -- increase growthRate
 // make upgrade buttons
-function makeUpgrade(t: string, c: number, r: number){
+function makeUpgrade(t: string, c: number, r: number) {
   const result: upgradeButton = {
     button: document.createElement("button"),
     text: t,
@@ -87,4 +87,6 @@ function makeUpgrade(t: string, c: number, r: number){
 const upgradeButtonA = makeUpgrade("👑", 10, 0.1);
 
 // purchase upgrade
-upgradeButtonA.button.addEventListener("click", () => { upgradeHandler(upgradeButtonA); });
+upgradeButtonA.button.addEventListener("click", () => {
+  upgradeHandler(upgradeButtonA);
+});
