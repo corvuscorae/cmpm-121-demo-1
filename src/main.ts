@@ -66,13 +66,12 @@ interface upgradeButton {
 // upgrade for automation -- increase growthRate
 const upgradeText = "👑";
 const upgradeButtonA: upgradeButton = {
-  button: document.createElement("button"), 
-  cost: 10, 
-  unitsPerSec: 0.1
+  button: document.createElement("button"),
+  cost: 10,
+  unitsPerSec: 0.1,
 };
 upgradeButtonA.button.innerHTML = upgradeText;
 app.append(upgradeButtonA.button);
-
 
 // purchase upgrade
 const upgradeCost: number = 10;
