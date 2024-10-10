@@ -62,7 +62,7 @@ requestAnimationFrame(autoCounter);
 //*** UPGRADE BUTTONS ***//
 // upgrade button interface
 interface upgradeButton {
-  button: HTMLButtonElement; 
+  button: HTMLButtonElement;
   text: string;
   cost: number;
   rate: number;
@@ -111,7 +111,7 @@ upgradeButtons.forEach(function (b) {
 
 //* STATUS DISPLAYS *//
 // growth rate status
-function growthRateMessage(rate: number){
+function growthRateMessage(rate: number) {
   return `growth rate: ${rate.toFixed(1)} bees per second`;
 }
 
@@ -120,7 +120,7 @@ growthRateDisplay.innerHTML = growthRateMessage(growthRate);
 app.append(growthRateDisplay);
 
 // upgrades purchased status
-function upgradesBoughtMessage(b: upgradeButton){
+function upgradesBoughtMessage(b: upgradeButton) {
   return `${b.text} supply: ${b.bought}`;
 }
 
@@ -136,7 +136,7 @@ upgradeButtons.forEach(function (b) {
 });
 
 // upgrades purchased status -- helper fcn to update message with amount bought
-function upgradeDisplayHandler(b: upgradeButton){
+function upgradeDisplayHandler(b: upgradeButton) {
   const i = upgradeButtons.findIndex((e) => e === b);
   upgradesBoughtDisplay[i].innerHTML = upgradesBoughtMessage(b);
 }
