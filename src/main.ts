@@ -65,12 +65,15 @@ interface Item {
   name: string;
   cost: number;
   rate: number;
+  description: string;
 }
 
 const availableItems: Item[] = [
-  { name: "queen", cost: 10, rate: 0.1 },
-  { name: "nest", cost: 100, rate: 2 },
-  { name: "hive", cost: 1000, rate: 50 },
+  { name: "worker", cost: 10, rate: 0.1, description: "" },
+  { name: "drone", cost: 100, rate: 2, description: "" },
+  { name: "queen", cost: 1000, rate: 50, description: ""  },
+  { name: "keeper", cost: 10000, rate: 300, description: "" },
+  { name: "oprah", cost: 100000, rate: 1500, description: "" },
 ];
 
 interface upgradeButton {
