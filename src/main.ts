@@ -17,7 +17,7 @@ app.append(button);
 
 //*** HANDLE COUNT ***//
 // show count
-let counter: number = 1000000;
+let counter: number = 0;
 const countDisplay = document.createElement("div");
 countDisplay.innerHTML = `bees: ${counter}`;
 app.append(countDisplay);
@@ -96,9 +96,9 @@ function upgradeHandler(thisButton: upgradeButton) {
 // array of upgrade buttons
 const upgradeButtons: upgradeButton[] = [];
 
-upgradeButtons.push(makeUpgrade("👑", 10, 0.1));
-upgradeButtons.push(makeUpgrade("B", 100, 2));
-upgradeButtons.push(makeUpgrade("C", 1000, 50));
+upgradeButtons.push(makeUpgrade("queen", 10, 0.1));
+upgradeButtons.push(makeUpgrade("nest", 100, 2));
+upgradeButtons.push(makeUpgrade("hive", 1000, 50));
 
 // listeners to purchase upgrades
 upgradeButtons.forEach(function (b) {
@@ -106,6 +106,8 @@ upgradeButtons.forEach(function (b) {
     b.bought++;
     upgradeHandler(b);
     upgradeDisplayHandler(b);
+    b.cost *= 1.15;
+    // console.log(b.cost);
   });
 });
 
