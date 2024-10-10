@@ -62,15 +62,15 @@ requestAnimationFrame(autoCounter);
 //*** UPGRADE BUTTONS ***//
 // upgrade button interface
 interface Item {
-  name: string,
-  cost: number,
-  rate: number
-};
+  name: string;
+  cost: number;
+  rate: number;
+}
 
-const availableItems : Item[] = [
-  {name: "queen", cost: 10, rate: 0.1},
-  {name: "nest", cost: 100, rate: 2},
-  {name: "hive", cost: 1000, rate: 50},
+const availableItems: Item[] = [
+  { name: "queen", cost: 10, rate: 0.1 },
+  { name: "nest", cost: 100, rate: 2 },
+  { name: "hive", cost: 1000, rate: 50 },
 ];
 
 interface upgradeButton {
