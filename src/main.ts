@@ -17,7 +17,7 @@ app.append(button);
 
 //*** HANDLE COUNT ***//
 // show count
-let counter: number = 0;
+let counter: number = 1000000;
 const countDisplay = document.createElement("div");
 countDisplay.innerHTML = `bees: ${counter}`;
 app.append(countDisplay);
@@ -62,10 +62,11 @@ requestAnimationFrame(autoCounter);
 //*** UPGRADE BUTTONS ***//
 // upgrade button interface
 interface upgradeButton {
-  button: HTMLButtonElement;
+  button: HTMLButtonElement; 
   text: string;
   cost: number;
   rate: number;
+  bought: number; // will track how many of this upgrade type has been bought
 }
 
 // function to make upgrade buttons
@@ -75,6 +76,7 @@ function makeUpgrade(t: string, c: number, r: number) {
     text: t,
     cost: c,
     rate: r,
+    bought: 0,
   };
   result.button.innerHTML = result.text;
   app.append(result.button);
@@ -86,6 +88,9 @@ function makeUpgrade(t: string, c: number, r: number) {
 function upgradeHandler(thisButton: upgradeButton) {
   editCount(-thisButton.cost);
   growthRate += thisButton.rate;
+
+  // update display
+  growthRateDisplay.innerHTML = growthRateMessage(growthRate);
 }
 
 // array of upgrade buttons
@@ -98,6 +103,40 @@ upgradeButtons.push(makeUpgrade("C", 1000, 50));
 // listeners to purchase upgrades
 upgradeButtons.forEach(function (b) {
   b.button.addEventListener("click", () => {
+    b.bought++;
     upgradeHandler(b);
+    upgradeDisplayHandler(b);
   });
 });
+
+//* STATUS DISPLAYS *//
+// growth rate status
+function growthRateMessage(rate: number){
+  return `growth rate: ${rate.toFixed(1)} bees per second`;
+}
+
+const growthRateDisplay = document.createElement("div");
+growthRateDisplay.innerHTML = growthRateMessage(growthRate);
+app.append(growthRateDisplay);
+
+// upgrades purchased status
+function upgradesBoughtMessage(b: upgradeButton){
+  return `${b.text} supply: ${b.bought}`;
+}
+
+// upgrades purchased status -- create an array of div elements
+const upgradesBoughtDisplay: HTMLDivElement[] = [];
+
+// upgrades purchased status -- add a new div element for every upgrade button
+upgradeButtons.forEach(function (b) {
+  const newDisplay = document.createElement("div");
+  upgradesBoughtDisplay.push(newDisplay);
+  newDisplay.innerHTML = upgradesBoughtMessage(b);
+  app.append(newDisplay);
+});
+
+// upgrades purchased status -- helper fcn to update message with amount bought
+function upgradeDisplayHandler(b: upgradeButton){
+  const i = upgradeButtons.findIndex((e) => e === b);
+  upgradesBoughtDisplay[i].innerHTML = upgradesBoughtMessage(b);
+}
