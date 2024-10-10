@@ -17,7 +17,7 @@ app.append(button);
 
 //*** HANDLE COUNT ***//
 // show count
-let counter: number = 0;
+let counter: number = 1000000;
 const countDisplay = document.createElement("div");
 countDisplay.innerHTML = `bees: ${counter}`;
 app.append(countDisplay);
@@ -29,7 +29,7 @@ function editCount(amount: number) {
 
   // for each upgrade button, adjust usability (diable or enable) as needed
   upgradeButtons.forEach(function (b) {
-    b.button.disabled = counter < b.cost;
+    b.button.disabled = counter < b.item.cost;
   });
 }
 
@@ -61,24 +61,32 @@ requestAnimationFrame(autoCounter);
 
 //*** UPGRADE BUTTONS ***//
 // upgrade button interface
+interface Item {
+  name: string,
+  cost: number,
+  rate: number
+};
+
+const availableItems : Item[] = [
+  {name: "queen", cost: 10, rate: 0.1},
+  {name: "nest", cost: 100, rate: 2},
+  {name: "hive", cost: 1000, rate: 50},
+];
+
 interface upgradeButton {
   button: HTMLButtonElement;
-  text: string;
-  cost: number;
-  rate: number;
-  bought: number; // will track how many of this upgrade type has been bought
+  item: Item;
+  bought: number; // will track how many of this item has been bought
 }
 
 // function to make upgrade buttons
-function makeUpgrade(t: string, c: number, r: number) {
+function makeUpgradeButton(i: Item) {
   const result: upgradeButton = {
     button: document.createElement("button"),
-    text: t,
-    cost: c,
-    rate: r,
+    item: i,
     bought: 0,
   };
-  result.button.innerHTML = result.text;
+  result.button.innerHTML = result.item.name;
   app.append(result.button);
 
   return result;
@@ -86,8 +94,8 @@ function makeUpgrade(t: string, c: number, r: number) {
 
 // function to apply upgrades -- deduct cost and adjust growth rate
 function upgradeHandler(thisButton: upgradeButton) {
-  editCount(-thisButton.cost);
-  growthRate += thisButton.rate;
+  editCount(-thisButton.item.cost);
+  growthRate += thisButton.item.rate;
 
   // update display
   growthRateDisplay.innerHTML = growthRateMessage(growthRate);
@@ -96,9 +104,7 @@ function upgradeHandler(thisButton: upgradeButton) {
 // array of upgrade buttons
 const upgradeButtons: upgradeButton[] = [];
 
-upgradeButtons.push(makeUpgrade("queen", 10, 0.1));
-upgradeButtons.push(makeUpgrade("nest", 100, 2));
-upgradeButtons.push(makeUpgrade("hive", 1000, 50));
+availableItems.forEach((i) => upgradeButtons.push(makeUpgradeButton(i)));
 
 // listeners to purchase upgrades
 upgradeButtons.forEach(function (b) {
@@ -106,7 +112,7 @@ upgradeButtons.forEach(function (b) {
     b.bought++;
     upgradeHandler(b);
     upgradeDisplayHandler(b);
-    b.cost *= 1.15;
+    b.item.cost *= 1.15;
     // console.log(b.cost);
   });
 });
@@ -123,7 +129,7 @@ app.append(growthRateDisplay);
 
 // upgrades purchased status
 function upgradesBoughtMessage(b: upgradeButton) {
-  return `${b.text} supply: ${b.bought}`;
+  return `${b.item.name} supply: ${b.bought}`;
 }
 
 // upgrades purchased status -- create an array of div elements
