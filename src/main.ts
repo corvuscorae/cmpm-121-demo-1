@@ -15,6 +15,7 @@ const button = document.createElement("button");
 button.innerHTML = buttonText;
 app.append(button);
 
+//*** HANDLE COUNT ***//
 // show count
 let counter: number = 0;
 const countDisplay = document.createElement("div");
@@ -24,10 +25,12 @@ app.append(countDisplay);
 // count -- helper fcn
 function editCount(amount: number) {
   counter += amount;
-  countDisplay.innerHTML = `bees: ${Math.round(counter)}`;
+  countDisplay.innerHTML = `bees: ${Math.round(counter)}`; // rounding here so we dont get fractional bees
 
-  // handle upgrade button usability
-  upgradeButtonA.button.disabled = counter < 10;
+  // for each upgrade button, adjust usability (diable or enable) as needed
+  upgradeButtons.forEach(function (b) {
+    b.button.disabled = counter < b.cost;
+  });
 }
 
 // increase count -- click button
@@ -56,6 +59,7 @@ function autoCounter(timestamp: number) {
 // Start the animation loop
 requestAnimationFrame(autoCounter);
 
+//*** UPGRADE BUTTONS ***//
 // upgrade button interface
 interface upgradeButton {
   button: HTMLButtonElement;
@@ -64,14 +68,7 @@ interface upgradeButton {
   rate: number;
 }
 
-// upgrade handler -- deduct cost and adjust growth rate
-function upgradeHandler(thisButton: upgradeButton) {
-  editCount(-thisButton.cost);
-  growthRate += thisButton.rate;
-}
-
-// upgrade for automation -- increase growthRate
-// make upgrade buttons
+// function to make upgrade buttons
 function makeUpgrade(t: string, c: number, r: number) {
   const result: upgradeButton = {
     button: document.createElement("button"),
@@ -81,12 +78,26 @@ function makeUpgrade(t: string, c: number, r: number) {
   };
   result.button.innerHTML = result.text;
   app.append(result.button);
+
   return result;
 }
 
-const upgradeButtonA = makeUpgrade("👑", 10, 0.1);
+// function to apply upgrades -- deduct cost and adjust growth rate
+function upgradeHandler(thisButton: upgradeButton) {
+  editCount(-thisButton.cost);
+  growthRate += thisButton.rate;
+}
 
-// purchase upgrade
-upgradeButtonA.button.addEventListener("click", () => {
-  upgradeHandler(upgradeButtonA);
+// array of upgrade buttons
+const upgradeButtons: upgradeButton[] = [];
+
+upgradeButtons.push(makeUpgrade("👑", 10, 0.1));
+upgradeButtons.push(makeUpgrade("B", 100, 2));
+upgradeButtons.push(makeUpgrade("C", 1000, 50));
+
+// listeners to purchase upgrades
+upgradeButtons.forEach(function (b) {
+  b.button.addEventListener("click", () => {
+    upgradeHandler(b);
+  });
 });
