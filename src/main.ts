@@ -69,11 +69,11 @@ interface Item {
 }
 
 const availableItems: Item[] = [
-  { name: "worker", cost: 10, rate: 0.1, description: "" },
-  { name: "drone", cost: 100, rate: 2, description: "" },
-  { name: "queen", cost: 1000, rate: 50, description: ""  },
-  { name: "keeper", cost: 10000, rate: 300, description: "" },
-  { name: "oprah", cost: 100000, rate: 1500, description: "" },
+  { name: "worker", cost: 10, rate: 0.1, description: "worker bees are females who collect honey from foraging bees and tend to the bee larvae" },
+  { name: "drone", cost: 100, rate: 2, description: "drone bees are males who try to mate with the queen and then die" },
+  { name: "queen", cost: 1000, rate: 50, description: "queen bees lay eggs, fertilizing only some. the unfertilized become drones, and the fertilized become workers or queens" },
+  { name: "keeper", cost: 10000, rate: 300, description: "beekeepers raise and care for colonies, usually in artificial beehives" },
+  { name: "oprah", cost: 100000, rate: 1500, description: "Oprah Winfrey is a media mogul best known for her talk show, The Oprah Winfrey Show" },
 ];
 
 interface upgradeButton {
@@ -116,6 +116,7 @@ upgradeButtons.forEach(function (b) {
     upgradeHandler(b);
     upgradeDisplayHandler(b);
     b.item.cost *= 1.15;
+    b.button.innerHTML = `-${b.item.cost.toFixed(1)} -> + ${b.item.rate} / sec`;
     // console.log(b.cost);
   });
 });
@@ -151,3 +152,22 @@ function upgradeDisplayHandler(b: upgradeButton) {
   const i = upgradeButtons.findIndex((e) => e === b);
   upgradesBoughtDisplay[i].innerHTML = upgradesBoughtMessage(b);
 }
+
+//* BUUTON DISPLAYS *//
+// display descriptions
+const upgradeButtonDescription = document.createElement("div");
+upgradeButtonDescription.innerHTML = "";
+app.append(upgradeButtonDescription);
+
+// display descriptions -- mouse hover listener
+upgradeButtons.forEach(function (b) {
+  b.button.addEventListener("mouseover", () => {
+    b.button.innerHTML = `-${b.item.cost.toFixed(1)} -> + ${b.item.rate} / sec`;
+    upgradeButtonDescription.innerHTML = b.item.description;
+    upgradeButtonDescription.style.display = "block";  // show div
+  });
+  b.button.addEventListener("mouseout", () => {
+    b.button.innerHTML = `${b.item.name}`;
+    upgradeButtonDescription.style.display = "none";  // hide div
+  });
+});
