@@ -200,4 +200,14 @@ upgradeButtons.forEach(function (b) {
     b.button.innerHTML = `${b.item.name}`;
     upgradeButtonDescription.style.display = "none"; // hide div
   });
+  // special click listener to show a video when oprah is clicked
+  b.button.addEventListener(("click"), () => {
+    if(b.item.name === "oprah") oprah.style.display = "block"; // show iFrame
+  });
 });
+
+// show oprah video
+const oprah = document.createElement("img");
+oprah.src = "https://akns-images.eonline.com/eol_images/Entire_Site/2016027/rs_394x222-160127120033-bees.gif?fit=around%7C394:222&output-quality=90&crop=394:222;center,top";
+app.append(oprah);
+oprah.style.display = "none"; // hide oprah
