@@ -2,7 +2,7 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
-const gameName = "a tiny game";
+const gameName = "save the bees";
 document.title = gameName;
 
 const header = document.createElement("h1");
@@ -13,13 +13,13 @@ app.append(header);
 const buttonText = "🐝";
 const button = document.createElement("button");
 button.innerHTML = buttonText;
+button.title = "buzz buzz";
 app.append(button);
 
 //*** HANDLE COUNT ***//
 // show count
 let counter: number = 0;
 const countDisplay = document.createElement("div");
-countDisplay.innerHTML = `bees: ${counter}`;
 app.append(countDisplay);
 
 // count -- helper fcn
@@ -28,36 +28,25 @@ function editCount(amount: number) {
   countDisplay.innerHTML = `bees: ${Math.round(counter)}`; // rounding here so we dont get fractional bees
 
   // for each upgrade button, adjust usability (diable or enable) as needed
-  upgradeButtons.forEach(function (b) {
-    b.button.disabled = counter < b.item.cost;
-  });
+  upgradeButtons.forEach(function (b) { b.button.disabled = counter < b.item.cost; });
 }
 
 // increase count -- click button
-button.addEventListener("click", () => {
-  editCount(1);
-});
+button.addEventListener("click", () => { editCount(1); });
 
 // increase count -- automatic
 let lastTime: number = 0;
 let growthRate: number = 0;
 function autoCounter(timestamp: number) {
   if (lastTime) {
-    // Calculate time since last frame
-    const deltaTime = timestamp - lastTime;
-    // Increment counter based on time: 1 unit per 1000 ms (1 second)
-    editCount((deltaTime / 1000) * growthRate);
+    const deltaTime = timestamp - lastTime;     // calculate time since last frame
+    editCount((deltaTime / 1000) * growthRate); // increment counter based on time: 1 unit per 1000 ms (1 second)
   }
 
-  // Update the last time
-  lastTime = performance.now();
-
-  // Continue the animation loop
-  requestAnimationFrame(autoCounter);
+  lastTime = performance.now();  
+  requestAnimationFrame(autoCounter);   // continue the animation loop
 }
-
-// Start the animation loop
-requestAnimationFrame(autoCounter);
+requestAnimationFrame(autoCounter);     // start the animation loop
 
 //*** UPGRADE BUTTONS ***//
 // upgrade button interface
@@ -110,6 +99,7 @@ interface upgradeButton {
   button: HTMLButtonElement;
   item: Item;
   bought: number; // will track how many of this item has been bought
+  display: HTMLDivElement; // will show bought count
 }
 
 // function to make upgrade buttons
@@ -118,12 +108,24 @@ function makeUpgradeButton(i: Item) {
     button: document.createElement("button"),
     item: i,
     bought: 0,
+    display: document.createElement("div"),
   };
   result.button.innerHTML = result.item.name;
+  result.button.title = result.item.description;
+  
   app.append(result.button);
 
   return result;
 }
+
+// array of upgrade buttons
+const upgradeButtons: upgradeButton[] = [];
+
+// make a button for every item
+availableItems.forEach((i) => upgradeButtons.push(makeUpgradeButton(i)));
+
+const growthRateDisplay = document.createElement("div");
+app.append(growthRateDisplay);
 
 // function to apply upgrades -- deduct cost and adjust growth rate
 function upgradeHandler(thisButton: upgradeButton) {
@@ -131,83 +133,34 @@ function upgradeHandler(thisButton: upgradeButton) {
   growthRate += thisButton.item.rate;
 
   // update display
-  growthRateDisplay.innerHTML = growthRateMessage(growthRate);
+  thisButton.display.innerHTML = `${thisButton.item.name} supply: ${thisButton.bought}`;
+  growthRateDisplay.innerHTML = `growth rate: ${growthRate.toFixed(1)} bees per second`;
 }
 
-// array of upgrade buttons
-const upgradeButtons: upgradeButton[] = [];
-
-availableItems.forEach((i) => upgradeButtons.push(makeUpgradeButton(i)));
-
-// listeners to purchase upgrades
 upgradeButtons.forEach(function (b) {
+  // listeners to purchase upgrades
   b.button.addEventListener("click", () => {
     b.bought++;
     upgradeHandler(b);
-    upgradeDisplayHandler(b);
     b.item.cost *= 1.15;
-    b.button.innerHTML = `-${b.item.cost.toFixed(1)} -> + ${b.item.rate} / sec`;
-    // console.log(b.cost);
+    b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
+    app.append(b.display);
+
+    // SPECIAL: show a video when oprah is clicked
+    if (b.item.name === "oprah") oprah.style.display = "block"; // show iFrame
   });
-});
 
-//* STATUS DISPLAYS *//
-// growth rate status
-function growthRateMessage(rate: number) {
-  return `growth rate: ${rate.toFixed(1)} bees per second`;
-}
-
-const growthRateDisplay = document.createElement("div");
-growthRateDisplay.innerHTML = growthRateMessage(growthRate);
-app.append(growthRateDisplay);
-
-// upgrades purchased status
-function upgradesBoughtMessage(b: upgradeButton) {
-  return `${b.item.name} supply: ${b.bought}`;
-}
-
-// upgrades purchased status -- create an array of div elements
-const upgradesBoughtDisplay: HTMLDivElement[] = [];
-
-// upgrades purchased status -- add a new div element for every upgrade button
-upgradeButtons.forEach(function (b) {
-  const newDisplay = document.createElement("div");
-  upgradesBoughtDisplay.push(newDisplay);
-  newDisplay.innerHTML = upgradesBoughtMessage(b);
-  app.append(newDisplay);
-});
-
-// upgrades purchased status -- helper fcn to update message with amount bought
-function upgradeDisplayHandler(b: upgradeButton) {
-  const i = upgradeButtons.findIndex((e) => e === b);
-  upgradesBoughtDisplay[i].innerHTML = upgradesBoughtMessage(b);
-}
-
-//* BUUTON DISPLAYS *//
-// display descriptions
-const upgradeButtonDescription = document.createElement("div");
-upgradeButtonDescription.innerHTML = "";
-app.append(upgradeButtonDescription);
-
-// display descriptions -- mouse hover listener
-upgradeButtons.forEach(function (b) {
   b.button.addEventListener("mouseover", () => {
-    b.button.innerHTML = `-${b.item.cost.toFixed(1)} -> + ${b.item.rate} / sec`;
-    upgradeButtonDescription.innerHTML = b.item.description;
-    upgradeButtonDescription.style.display = "block"; // show div
+    b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
   });
   b.button.addEventListener("mouseout", () => {
     b.button.innerHTML = `${b.item.name}`;
-    upgradeButtonDescription.style.display = "none"; // hide div
-  });
-  // special click listener to show a video when oprah is clicked
-  b.button.addEventListener(("click"), () => {
-    if(b.item.name === "oprah") oprah.style.display = "block"; // show iFrame
   });
 });
 
 // show oprah video
 const oprah = document.createElement("img");
-oprah.src = "https://akns-images.eonline.com/eol_images/Entire_Site/2016027/rs_394x222-160127120033-bees.gif?fit=around%7C394:222&output-quality=90&crop=394:222;center,top";
+oprah.src =
+  "https://akns-images.eonline.com/eol_images/Entire_Site/2016027/rs_394x222-160127120033-bees.gif?fit=around%7C394:222&output-quality=90&crop=394:222;center,top";
 app.append(oprah);
 oprah.style.display = "none"; // hide oprah
