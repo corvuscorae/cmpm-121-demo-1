@@ -4,6 +4,19 @@ const app: HTMLDivElement = document.querySelector("#app")!;
 const header = document.createElement("h1");
 app.append(header);
 
+const COST_MULTIPLIER = 1.15; 
+
+// count -- helper fcn
+function editCount(amount: number) {
+  config.count.value += amount;
+  config.count.display.innerHTML = `bees: ${Math.round(config.count.value)}`; // rounding here so we dont get fractional bees
+
+  // for each upgrade button, adjust usability (diable or enable) as needed
+  upgradeButtons.forEach(function (b) {
+    b.button.disabled = config.count.value < b.item.cost;
+  });
+}
+
 const config = {
   name: "save the bees",
   count: { value: 0, display: document.createElement("div") },
@@ -26,28 +39,28 @@ const config = {
 document.title = config.name;
 header.innerHTML = config.name;
 
-const interactable = {
+const interactiveElements = {
   manual: {
     text: "🐝",
     button: document.createElement("button"),
     listenter: () => {
       // increase count -- click button
-      interactable.manual.button.addEventListener("click", () => editCount(1));
+      interactiveElements.manual.button.addEventListener("click", () => editCount(1));
     },
   },
   upgrades: [],
   // ??
   append: () => {
-    interactable.manual.button.innerHTML = interactable.manual.text;
-    interactable.manual.button.title = "buzz buzz";
-    app.append(interactable.manual.button);
+    interactiveElements.manual.button.innerHTML = interactiveElements.manual.text;
+    interactiveElements.manual.button.title = "buzz buzz";
+    app.append(interactiveElements.manual.button);
   },
 };
 
-interactable.append();
+interactiveElements.append();
 config.append();
 
-interactable.manual.listenter();
+interactiveElements.manual.listenter();
 
 // increase count -- automatic
 let lastTime: number = 0;
@@ -60,16 +73,6 @@ interface counter {
   div: HTMLDivElement;
 }
 
-// count -- helper fcn
-function editCount(amount: number) {
-  config.count.value += amount;
-  config.count.display.innerHTML = `bees: ${Math.round(config.count.value)}`; // rounding here so we dont get fractional bees
-
-  // for each upgrade button, adjust usability (diable or enable) as needed
-  upgradeButtons.forEach(function (b) {
-    b.button.disabled = config.count.value < b.item.cost;
-  });
-}
 
 
 
@@ -165,7 +168,7 @@ upgradeButtons.forEach(function (b) {
   b.button.addEventListener("click", () => {
     b.bought.value++;
     upgradeHandler(b);
-    b.item.cost *= 1.15;
+    b.item.cost *= COST_MULTIPLIER;
     b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
     app.append(b.bought.div);
 
