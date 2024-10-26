@@ -1,6 +1,8 @@
 import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
+const header = document.createElement("h1");
+app.append(header); 
 
 const config = {
   name: "save the bees",
@@ -8,16 +10,16 @@ const config = {
   growthRate: { value: 0, display: document.createElement("div") },
 };
 
+document.title = config.name;
+header.innerHTML = config.name;
+
 const interactable = {
   manual: { text: "🐝", button: document.createElement("button") },
-  upgrades: []
-}
+  upgrades: [],
+};
 
-document.title = config.name;
 
-const header = document.createElement("h1");
-header.innerHTML = config.name;
-app.append(header);
+
 
 // make bee button
 interactable.manual.button.innerHTML = interactable.manual.text;
