@@ -2,11 +2,16 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
-const gameName = "save the bees";
-document.title = gameName;
+const config = {
+  gameName : "save the bees",
+  count: {value: 0, display: document.createElement("div") /*countDisplay*/},
+  growthRate: {value: 0, display: document.createElement("div")}
+}
+
+document.title = config.gameName;
 
 const header = document.createElement("h1");
-header.innerHTML = gameName;
+header.innerHTML = config.gameName;
 app.append(header);
 
 // make bee button
@@ -17,36 +22,42 @@ button.title = "buzz buzz";
 app.append(button);
 
 //*** HANDLE COUNT ***//
+interface counter {
+  value: number,
+  div: HTMLDivElement,
+}
 // show count
-let counter: number = 0;
-const countDisplay = document.createElement("div");
-app.append(countDisplay);
+app.append(config.count.display);
+app.append(config.growthRate.display)
 
 // count -- helper fcn
 function editCount(amount: number) {
-  counter += amount;
-  countDisplay.innerHTML = `bees: ${Math.round(counter)}`; // rounding here so we dont get fractional bees
+  config.count.value += amount;
+  config.count.display.innerHTML = `bees: ${Math.round(config.count.value)}`; // rounding here so we dont get fractional bees
 
   // for each upgrade button, adjust usability (diable or enable) as needed
-  upgradeButtons.forEach(function (b) { b.button.disabled = counter < b.item.cost; });
+  upgradeButtons.forEach(function (b) {
+    b.button.disabled = config.count.value < b.item.cost;
+  });
 }
 
 // increase count -- click button
-button.addEventListener("click", () => { editCount(1); });
+button.addEventListener("click", () => {
+  editCount(1);
+});
 
 // increase count -- automatic
 let lastTime: number = 0;
-let growthRate: number = 0;
 function autoCounter(timestamp: number) {
   if (lastTime) {
-    const deltaTime = timestamp - lastTime;     // calculate time since last frame
-    editCount((deltaTime / 1000) * growthRate); // increment counter based on time: 1 unit per 1000 ms (1 second)
+    const deltaTime = timestamp - lastTime; // calculate time since last frame
+    editCount((deltaTime / 1000) * config.growthRate.value); // increment counter based on time: 1 unit per 1000 ms (1 second)
   }
 
-  lastTime = performance.now();  
-  requestAnimationFrame(autoCounter);   // continue the animation loop
+  lastTime = performance.now();
+  requestAnimationFrame(autoCounter); // continue the animation loop
 }
-requestAnimationFrame(autoCounter);     // start the animation loop
+requestAnimationFrame(autoCounter); // start the animation loop
 
 //*** UPGRADE BUTTONS ***//
 // upgrade button interface
@@ -98,8 +109,7 @@ const availableItems: Item[] = [
 interface upgradeButton {
   button: HTMLButtonElement;
   item: Item;
-  bought: number; // will track how many of this item has been bought
-  display: HTMLDivElement; // will show bought count
+  bought: counter; // will track how many of this item has been bought
 }
 
 // function to make upgrade buttons
@@ -107,12 +117,14 @@ function makeUpgradeButton(i: Item) {
   const result: upgradeButton = {
     button: document.createElement("button"),
     item: i,
-    bought: 0,
-    display: document.createElement("div"),
+    bought: {
+      value: 0,
+      div: document.createElement("div"),
+    },
   };
   result.button.innerHTML = result.item.name;
   result.button.title = result.item.description;
-  
+
   app.append(result.button);
 
   return result;
@@ -124,27 +136,24 @@ const upgradeButtons: upgradeButton[] = [];
 // make a button for every item
 availableItems.forEach((i) => upgradeButtons.push(makeUpgradeButton(i)));
 
-const growthRateDisplay = document.createElement("div");
-app.append(growthRateDisplay);
-
 // function to apply upgrades -- deduct cost and adjust growth rate
 function upgradeHandler(thisButton: upgradeButton) {
   editCount(-thisButton.item.cost);
-  growthRate += thisButton.item.rate;
+  config.growthRate.value += thisButton.item.rate;
 
   // update display
-  thisButton.display.innerHTML = `${thisButton.item.name} supply: ${thisButton.bought}`;
-  growthRateDisplay.innerHTML = `growth rate: ${growthRate.toFixed(1)} bees per second`;
+  thisButton.bought.div.innerHTML = `${thisButton.item.name} supply: ${thisButton.bought.value}`;
+  config.growthRate.display.innerHTML = `growth rate: ${config.growthRate.value.toFixed(1)} bees per second`;
 }
 
 upgradeButtons.forEach(function (b) {
   // listeners to purchase upgrades
   b.button.addEventListener("click", () => {
-    b.bought++;
+    b.bought.value++;
     upgradeHandler(b);
     b.item.cost *= 1.15;
     b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
-    app.append(b.display);
+    app.append(b.bought.div);
 
     // SPECIAL: show a video when oprah is clicked
     if (b.item.name === "oprah") oprah.style.display = "block"; // show iFrame
