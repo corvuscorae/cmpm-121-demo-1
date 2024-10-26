@@ -2,38 +2,49 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 const header = document.createElement("h1");
-app.append(header); 
+app.append(header);
 
 const config = {
   name: "save the bees",
   count: { value: 0, display: document.createElement("div") },
   growthRate: { value: 0, display: document.createElement("div") },
+  append: () =>{
+    app.append(config.count.display);
+    app.append(config.growthRate.display);
+  }
 };
 
 document.title = config.name;
 header.innerHTML = config.name;
 
 const interactable = {
-  manual: { text: "🐝", button: document.createElement("button") },
+  manual: { 
+    text: "🐝", 
+    button: document.createElement("button"),
+    listenter: () => {
+      // increase count -- click button
+      interactable.manual.button.addEventListener("click", () => editCount(1));
+    }
+  },
   upgrades: [],
+  // ?? 
+  append: () => {
+    interactable.manual.button.innerHTML = interactable.manual.text;
+    interactable.manual.button.title = "buzz buzz";
+    app.append(interactable.manual.button);
+  } 
 };
 
+interactable.append();
+config.append();
 
-
-
-// make bee button
-interactable.manual.button.innerHTML = interactable.manual.text;
-interactable.manual.button.title = "buzz buzz";
-app.append(interactable.manual.button);
+interactable.manual.listenter();
 
 //*** HANDLE COUNT ***//
 interface counter {
   value: number;
   div: HTMLDivElement;
 }
-// show count
-app.append(config.count.display);
-app.append(config.growthRate.display);
 
 // count -- helper fcn
 function editCount(amount: number) {
@@ -45,9 +56,6 @@ function editCount(amount: number) {
     b.button.disabled = config.count.value < b.item.cost;
   });
 }
-
-// increase count -- click button
-interactable.manual.button.addEventListener("click", () => editCount(1));
 
 // increase count -- automatic
 let lastTime: number = 0;
