@@ -17,8 +17,8 @@ const MANUAL: Item = {
   name: "🐝",
   cost: -1,
   rate: 0,
-  description: "buzz buzz"
-}
+  description: "buzz buzz",
+};
 
 //* interfaces *//
 interface Counter {
@@ -33,7 +33,7 @@ interface Item {
   description: string;
 }
 
-interface UpgradeButton {
+interface Button {
   button: HTMLButtonElement;
   item: Item;
   bought?: Counter; // will track how many of this item has been bought
@@ -41,12 +41,13 @@ interface UpgradeButton {
 
 //* helper fcns *//
 // function to make upgrade buttons
-function makeUpgradeButton(i: Item) {
-  const result: UpgradeButton = {
+function makeButton(i: Item) {
+  const result: Button = {
     button: document.createElement("button"),
     item: i,
   };
-  if(i.cost > 0) result.bought = {value: 0, div: document.createElement("div")}
+  if (i.cost > 0)
+    result.bought = { value: 0, div: document.createElement("div") };
 
   result.button.innerHTML = result.item.name;
   result.button.title = result.item.description;
@@ -81,6 +82,47 @@ function timekeeping(timestamp: number) {
 timekeeping(lastTime);
 requestAnimationFrame(timekeeping); // start the animation loop
 
+// execute clicker behavior + update display
+function clickerHandler (b: Button) {
+  editCount(-b.item.cost);
+  config.growthRate.value += b.item.rate;
+
+  // update display
+  if (b.bought)
+    b.bought.div.innerHTML = `${b.item.name} supply: ${b.bought.value}`;
+  config.growthRate.display.innerHTML = `growth rate: ${config.growthRate.value.toFixed(1)} bees per second`;
+}
+
+// button click listener for clicker
+function clickerPressed(b: Button){
+  b.button.addEventListener("click", () => {
+    if (b.bought) {
+      b.bought.value++;
+      app.append(b.bought.div);
+    }
+
+    clicker.execute(b);
+
+    if (b.item.cost > 0) {
+      b.item.cost *= COST_MULTIPLIER;
+      b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
+    }
+
+    // SPECIAL: show a video when oprah is clicked
+    if (b.item.name === "oprah") oprah.style.display = "block"; // show iFrame
+  });
+}
+
+// mouse hover listener for clicker
+function clickerHovered(b: Button){
+  b.button.addEventListener("mouseover", () => {
+    b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
+  });
+  b.button.addEventListener("mouseout", () => {
+    b.button.innerHTML = `${b.item.name}`;
+  });
+}
+
 //* game objects *//
 const config = {
   name: "save the bees",
@@ -88,43 +130,13 @@ const config = {
   growthRate: { value: 0, display: document.createElement("div") },
 };
 
-const buttonArray: UpgradeButton[] = [];
+const buttonArray: Button[] = [];
 const clicker = {
   buttons: buttonArray,
-  apply: (b: UpgradeButton) => {
-    editCount(-b.item.cost);
-    config.growthRate.value += b.item.rate;
-
-    // update display
-    if(b.bought) b.bought.div.innerHTML = `${b.item.name} supply: ${b.bought.value}`;
-    config.growthRate.display.innerHTML = `growth rate: ${config.growthRate.value.toFixed(1)} bees per second`;
-  },
-  listen: (b: UpgradeButton) => {
-    b.button.addEventListener("click", () => {
-      if(b.bought){
-        b.bought.value++;
-        app.append(b.bought.div);
-      }
-      
-      clicker.apply(b);
-
-      if(b.item.cost > 0){
-        b.item.cost *= COST_MULTIPLIER;
-        b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
-      }
-
-      // SPECIAL: show a video when oprah is clicked
-      if (b.item.name === "oprah") oprah.style.display = "block"; // show iFrame
-    });
-  
-    if(b.item.cost > 0){
-      b.button.addEventListener("mouseover", () => {
-        b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
-      });
-      b.button.addEventListener("mouseout", () => {
-        b.button.innerHTML = `${b.item.name}`;
-      });
-    }
+  execute: (b: Button) => clickerHandler(b),
+  listener: (b: Button) => {
+    clickerPressed(b);
+    if (b.item.cost > 0) { clickerHovered(b); }
   },
 };
 
@@ -168,8 +180,10 @@ const availableItems: Item[] = [
   },
 ];
 
-availableItems.forEach((i) => {clicker.buttons.push(makeUpgradeButton(i))});
-clicker.buttons.forEach(clicker.listen);
+availableItems.forEach((i) => {
+  clicker.buttons.push(makeButton(i));
+});
+clicker.buttons.forEach(clicker.listener);
 
 document.title = config.name;
 header.innerHTML = config.name;
