@@ -4,7 +4,7 @@ const app: HTMLDivElement = document.querySelector("#app")!;
 const header = document.createElement("h1");
 app.append(header);
 
-const COST_MULTIPLIER = 1.15; 
+const COST_MULTIPLIER = 1.15;
 
 // count -- helper fcn
 function editCount(amount: number) {
@@ -21,15 +21,6 @@ const config = {
   name: "save the bees",
   count: { value: 0, display: document.createElement("div") },
   growthRate: { value: 0, display: document.createElement("div") },
-  time: (timestamp: number) => {
-      if (lastTime) {
-        const deltaTime = timestamp - lastTime; // calculate time since last frame
-        editCount((deltaTime / 1000) * config.growthRate.value); // increment counter based on time: 1 unit per 1000 ms (1 second)
-      }
-    
-      lastTime = performance.now();
-      requestAnimationFrame(config.time); // continue the animation loop
-    },
   append: () => {
     app.append(config.count.display);
     app.append(config.growthRate.display);
@@ -43,15 +34,18 @@ const interactiveElements = {
   manual: {
     text: "🐝",
     button: document.createElement("button"),
-    listenter: () => {
+    listener: () => {
       // increase count -- click button
-      interactiveElements.manual.button.addEventListener("click", () => editCount(1));
+      interactiveElements.manual.button.addEventListener("click", () =>
+        editCount(1),
+      );
     },
   },
   upgrades: [],
   // ??
   append: () => {
-    interactiveElements.manual.button.innerHTML = interactiveElements.manual.text;
+    interactiveElements.manual.button.innerHTML =
+      interactiveElements.manual.text;
     interactiveElements.manual.button.title = "buzz buzz";
     app.append(interactiveElements.manual.button);
   },
@@ -60,21 +54,27 @@ const interactiveElements = {
 interactiveElements.append();
 config.append();
 
-interactiveElements.manual.listenter();
+interactiveElements.manual.listener();
 
 // increase count -- automatic
 let lastTime: number = 0;
-config.time(lastTime);
-requestAnimationFrame(config.time); // start the animation loop
+function timekeeping(timestamp: number) {
+  if (lastTime) {
+    const deltaTime = timestamp - lastTime; // calculate time since last frame
+    editCount((deltaTime / 1000) * config.growthRate.value); // increment counter based on time: 1 unit per 1000 ms (1 second)
+  }
+
+  lastTime = performance.now();
+  requestAnimationFrame(timekeeping); // continue the animation loop
+}
+timekeeping(lastTime);
+requestAnimationFrame(timekeeping); // start the animation loop
 
 //*** HANDLE COUNT ***//
 interface counter {
   value: number;
   div: HTMLDivElement;
 }
-
-
-
 
 //*** UPGRADE BUTTONS ***//
 // upgrade button interface
