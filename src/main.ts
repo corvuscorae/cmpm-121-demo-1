@@ -3,32 +3,35 @@ import "./style.css";
 const app: HTMLDivElement = document.querySelector("#app")!;
 
 const config = {
-  gameName : "save the bees",
-  count: {value: 0, display: document.createElement("div") /*countDisplay*/},
-  growthRate: {value: 0, display: document.createElement("div")}
+  name: "save the bees",
+  count: { value: 0, display: document.createElement("div") },
+  growthRate: { value: 0, display: document.createElement("div") },
+};
+
+const interactable = {
+  manual: { text: "🐝", button: document.createElement("button") },
+  upgrades: []
 }
 
-document.title = config.gameName;
+document.title = config.name;
 
 const header = document.createElement("h1");
-header.innerHTML = config.gameName;
+header.innerHTML = config.name;
 app.append(header);
 
 // make bee button
-const buttonText = "🐝";
-const button = document.createElement("button");
-button.innerHTML = buttonText;
-button.title = "buzz buzz";
-app.append(button);
+interactable.manual.button.innerHTML = interactable.manual.text;
+interactable.manual.button.title = "buzz buzz";
+app.append(interactable.manual.button);
 
 //*** HANDLE COUNT ***//
 interface counter {
-  value: number,
-  div: HTMLDivElement,
+  value: number;
+  div: HTMLDivElement;
 }
 // show count
 app.append(config.count.display);
-app.append(config.growthRate.display)
+app.append(config.growthRate.display);
 
 // count -- helper fcn
 function editCount(amount: number) {
@@ -42,9 +45,7 @@ function editCount(amount: number) {
 }
 
 // increase count -- click button
-button.addEventListener("click", () => {
-  editCount(1);
-});
+interactable.manual.button.addEventListener("click", () => editCount(1));
 
 // increase count -- automatic
 let lastTime: number = 0;
