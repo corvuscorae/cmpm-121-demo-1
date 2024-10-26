@@ -8,37 +8,51 @@ const config = {
   name: "save the bees",
   count: { value: 0, display: document.createElement("div") },
   growthRate: { value: 0, display: document.createElement("div") },
-  append: () =>{
+  time: (timestamp: number) => {
+      if (lastTime) {
+        const deltaTime = timestamp - lastTime; // calculate time since last frame
+        editCount((deltaTime / 1000) * config.growthRate.value); // increment counter based on time: 1 unit per 1000 ms (1 second)
+      }
+    
+      lastTime = performance.now();
+      requestAnimationFrame(config.time); // continue the animation loop
+    },
+  append: () => {
     app.append(config.count.display);
     app.append(config.growthRate.display);
-  }
+  },
 };
 
 document.title = config.name;
 header.innerHTML = config.name;
 
 const interactable = {
-  manual: { 
-    text: "🐝", 
+  manual: {
+    text: "🐝",
     button: document.createElement("button"),
     listenter: () => {
       // increase count -- click button
       interactable.manual.button.addEventListener("click", () => editCount(1));
-    }
+    },
   },
   upgrades: [],
-  // ?? 
+  // ??
   append: () => {
     interactable.manual.button.innerHTML = interactable.manual.text;
     interactable.manual.button.title = "buzz buzz";
     app.append(interactable.manual.button);
-  } 
+  },
 };
 
 interactable.append();
 config.append();
 
 interactable.manual.listenter();
+
+// increase count -- automatic
+let lastTime: number = 0;
+config.time(lastTime);
+requestAnimationFrame(config.time); // start the animation loop
 
 //*** HANDLE COUNT ***//
 interface counter {
@@ -57,18 +71,7 @@ function editCount(amount: number) {
   });
 }
 
-// increase count -- automatic
-let lastTime: number = 0;
-function autoCounter(timestamp: number) {
-  if (lastTime) {
-    const deltaTime = timestamp - lastTime; // calculate time since last frame
-    editCount((deltaTime / 1000) * config.growthRate.value); // increment counter based on time: 1 unit per 1000 ms (1 second)
-  }
 
-  lastTime = performance.now();
-  requestAnimationFrame(autoCounter); // continue the animation loop
-}
-requestAnimationFrame(autoCounter); // start the animation loop
 
 //*** UPGRADE BUTTONS ***//
 // upgrade button interface
