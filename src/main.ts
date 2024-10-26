@@ -4,59 +4,70 @@ const app: HTMLDivElement = document.querySelector("#app")!;
 const header = document.createElement("h1");
 app.append(header);
 
-const COST_MULTIPLIER = 1.15;
+// special (oprah gif)
+const oprah = document.createElement("img");
+oprah.src =
+  "https://akns-images.eonline.com/eol_images/Entire_Site/2016027/rs_394x222-160127120033-bees.gif?fit=around%7C394:222&output-quality=90&crop=394:222;center,top";
+app.append(oprah);
+oprah.style.display = "none"; // hide oprah
 
-// count -- helper fcn
+//* constants *//
+const COST_MULTIPLIER = 1.15;
+const MANUAL: Item = {
+  name: "🐝",
+  cost: -1,
+  rate: 0,
+  description: "buzz buzz"
+}
+
+//* interfaces *//
+interface Counter {
+  value: number;
+  div: HTMLDivElement;
+}
+
+interface Item {
+  name: string;
+  cost: number;
+  rate: number;
+  description: string;
+}
+
+interface UpgradeButton {
+  button: HTMLButtonElement;
+  item: Item;
+  bought?: Counter; // will track how many of this item has been bought
+}
+
+//* helper fcns *//
+// function to make upgrade buttons
+function makeUpgradeButton(i: Item) {
+  const result: UpgradeButton = {
+    button: document.createElement("button"),
+    item: i,
+  };
+  if(i.cost > 0) result.bought = {value: 0, div: document.createElement("div")}
+
+  result.button.innerHTML = result.item.name;
+  result.button.title = result.item.description;
+
+  app.append(result.button);
+
+  return result;
+}
+
+// fuction to edit count and count display
 function editCount(amount: number) {
   config.count.value += amount;
   config.count.display.innerHTML = `bees: ${Math.round(config.count.value)}`; // rounding here so we dont get fractional bees
 
   // for each upgrade button, adjust usability (diable or enable) as needed
-  upgradeButtons.forEach(function (b) {
+  clicker.buttons.forEach(function (b) {
     b.button.disabled = config.count.value < b.item.cost;
   });
 }
 
-const config = {
-  name: "save the bees",
-  count: { value: 0, display: document.createElement("div") },
-  growthRate: { value: 0, display: document.createElement("div") },
-  append: () => {
-    app.append(config.count.display);
-    app.append(config.growthRate.display);
-  },
-};
-
-document.title = config.name;
-header.innerHTML = config.name;
-
-const interactiveElements = {
-  manual: {
-    text: "🐝",
-    button: document.createElement("button"),
-    listener: () => {
-      // increase count -- click button
-      interactiveElements.manual.button.addEventListener("click", () =>
-        editCount(1),
-      );
-    },
-  },
-  upgrades: [],
-  // ??
-  append: () => {
-    interactiveElements.manual.button.innerHTML =
-      interactiveElements.manual.text;
-    interactiveElements.manual.button.title = "buzz buzz";
-    app.append(interactiveElements.manual.button);
-  },
-};
-
-interactiveElements.append();
-config.append();
-
-interactiveElements.manual.listener();
-
-// increase count -- automatic
+// time keeper to auto-increase count
 let lastTime: number = 0;
 function timekeeping(timestamp: number) {
   if (lastTime) {
@@ -70,22 +81,56 @@ function timekeeping(timestamp: number) {
 timekeeping(lastTime);
 requestAnimationFrame(timekeeping); // start the animation loop
 
-//*** HANDLE COUNT ***//
-interface counter {
-  value: number;
-  div: HTMLDivElement;
-}
+//* game objects *//
+const config = {
+  name: "save the bees",
+  count: { value: 0, display: document.createElement("div") },
+  growthRate: { value: 0, display: document.createElement("div") },
+};
 
-//*** UPGRADE BUTTONS ***//
-// upgrade button interface
-interface Item {
-  name: string;
-  cost: number;
-  rate: number;
-  description: string;
-}
+const buttonArray: UpgradeButton[] = [];
+const clicker = {
+  buttons: buttonArray,
+  apply: (b: UpgradeButton) => {
+    editCount(-b.item.cost);
+    config.growthRate.value += b.item.rate;
 
+    // update display
+    if(b.bought) b.bought.div.innerHTML = `${b.item.name} supply: ${b.bought.value}`;
+    config.growthRate.display.innerHTML = `growth rate: ${config.growthRate.value.toFixed(1)} bees per second`;
+  },
+  listen: (b: UpgradeButton) => {
+    b.button.addEventListener("click", () => {
+      if(b.bought){
+        b.bought.value++;
+        app.append(b.bought.div);
+      }
+      
+      clicker.apply(b);
+
+      if(b.item.cost > 0){
+        b.item.cost *= COST_MULTIPLIER;
+        b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
+      }
+
+      // SPECIAL: show a video when oprah is clicked
+      if (b.item.name === "oprah") oprah.style.display = "block"; // show iFrame
+    });
+  
+    if(b.item.cost > 0){
+      b.button.addEventListener("mouseover", () => {
+        b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
+      });
+      b.button.addEventListener("mouseout", () => {
+        b.button.innerHTML = `${b.item.name}`;
+      });
+    }
+  },
+};
+
+//* game items (data) *//
 const availableItems: Item[] = [
+  MANUAL,
   {
     name: "worker",
     cost: 10,
@@ -123,70 +168,10 @@ const availableItems: Item[] = [
   },
 ];
 
-interface upgradeButton {
-  button: HTMLButtonElement;
-  item: Item;
-  bought: counter; // will track how many of this item has been bought
-}
+availableItems.forEach((i) => {clicker.buttons.push(makeUpgradeButton(i))});
+clicker.buttons.forEach(clicker.listen);
 
-// function to make upgrade buttons
-function makeUpgradeButton(i: Item) {
-  const result: upgradeButton = {
-    button: document.createElement("button"),
-    item: i,
-    bought: {
-      value: 0,
-      div: document.createElement("div"),
-    },
-  };
-  result.button.innerHTML = result.item.name;
-  result.button.title = result.item.description;
-
-  app.append(result.button);
-
-  return result;
-}
-
-// array of upgrade buttons
-const upgradeButtons: upgradeButton[] = [];
-
-// make a button for every item
-availableItems.forEach((i) => upgradeButtons.push(makeUpgradeButton(i)));
-
-// function to apply upgrades -- deduct cost and adjust growth rate
-function upgradeHandler(thisButton: upgradeButton) {
-  editCount(-thisButton.item.cost);
-  config.growthRate.value += thisButton.item.rate;
-
-  // update display
-  thisButton.bought.div.innerHTML = `${thisButton.item.name} supply: ${thisButton.bought.value}`;
-  config.growthRate.display.innerHTML = `growth rate: ${config.growthRate.value.toFixed(1)} bees per second`;
-}
-
-upgradeButtons.forEach(function (b) {
-  // listeners to purchase upgrades
-  b.button.addEventListener("click", () => {
-    b.bought.value++;
-    upgradeHandler(b);
-    b.item.cost *= COST_MULTIPLIER;
-    b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
-    app.append(b.bought.div);
-
-    // SPECIAL: show a video when oprah is clicked
-    if (b.item.name === "oprah") oprah.style.display = "block"; // show iFrame
-  });
-
-  b.button.addEventListener("mouseover", () => {
-    b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
-  });
-  b.button.addEventListener("mouseout", () => {
-    b.button.innerHTML = `${b.item.name}`;
-  });
-});
-
-// show oprah video
-const oprah = document.createElement("img");
-oprah.src =
-  "https://akns-images.eonline.com/eol_images/Entire_Site/2016027/rs_394x222-160127120033-bees.gif?fit=around%7C394:222&output-quality=90&crop=394:222;center,top";
-app.append(oprah);
-oprah.style.display = "none"; // hide oprah
+document.title = config.name;
+header.innerHTML = config.name;
+app.append(config.count.display);
+app.append(config.growthRate.display);
