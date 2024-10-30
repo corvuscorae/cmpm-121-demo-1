@@ -18,6 +18,7 @@ const MANUAL: Item = {
   cost: -1,
   rate: 0,
   description: "buzz buzz",
+  isUpgrade: false
 };
 
 //* interfaces *//
@@ -31,6 +32,7 @@ interface Item {
   cost: number;
   rate: number;
   description: string;
+  isUpgrade: boolean;
 }
 
 interface Button {
@@ -149,6 +151,7 @@ const availableItems: Item[] = [
     rate: 0.1,
     description:
       "worker bees are females who collect honey from foraging bees and tend to the bee larvae",
+    isUpgrade: true
   },
   {
     name: "drone",
@@ -156,6 +159,7 @@ const availableItems: Item[] = [
     rate: 2,
     description:
       "drone bees are males who try to mate with the queen and then die",
+    isUpgrade: true
   },
   {
     name: "queen",
@@ -163,6 +167,7 @@ const availableItems: Item[] = [
     rate: 50,
     description:
       "queen bees lay eggs, fertilizing only some. the unfertilized become drones, and the fertilized become workers or queens",
+    isUpgrade: true
   },
   {
     name: "keeper",
@@ -170,6 +175,7 @@ const availableItems: Item[] = [
     rate: 300,
     description:
       "beekeepers raise and care for colonies, usually in artificial beehives",
+    isUpgrade: true
   },
   {
     name: "oprah",
@@ -177,6 +183,7 @@ const availableItems: Item[] = [
     rate: 1500,
     description:
       "Oprah Winfrey is a media mogul best known for her talk show, The Oprah Winfrey Show",
+    isUpgrade: true
   },
 ];
 
