@@ -18,7 +18,7 @@ const MANUAL: Item = {
   cost: -1,
   rate: 0,
   description: "buzz buzz",
-  isUpgrade: false
+  isUpgrade: false,
 };
 
 //* interfaces *//
@@ -48,7 +48,7 @@ function makeButton(i: Item) {
     button: document.createElement("button"),
     item: i,
   };
-  if (i.cost > 0)
+  if (i.isUpgrade)
     result.bought = { value: 0, div: document.createElement("div") };
 
   result.button.innerHTML = result.item.name;
@@ -85,7 +85,7 @@ timekeeping(lastTime);
 requestAnimationFrame(timekeeping); // start the animation loop
 
 // execute clicker behavior + update display
-function clickerHandler (b: Button) {
+function clickerHandler(b: Button) {
   editCount(-b.item.cost);
   config.growthRate.value += b.item.rate;
 
@@ -96,7 +96,7 @@ function clickerHandler (b: Button) {
 }
 
 // button click listener for clicker
-function clickerPressed(b: Button){
+function clickerPressed(b: Button) {
   b.button.addEventListener("click", () => {
     if (b.bought) {
       b.bought.value++;
@@ -105,7 +105,7 @@ function clickerPressed(b: Button){
 
     clicker.execute(b);
 
-    if (b.item.cost > 0) {
+    if (b.item.isUpgrade) {
       b.item.cost *= COST_MULTIPLIER;
       b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
     }
@@ -116,7 +116,7 @@ function clickerPressed(b: Button){
 }
 
 // mouse hover listener for clicker
-function clickerHovered(b: Button){
+function clickerHovered(b: Button) {
   b.button.addEventListener("mouseover", () => {
     b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
   });
@@ -138,7 +138,9 @@ const clicker = {
   execute: (b: Button) => clickerHandler(b),
   listener: (b: Button) => {
     clickerPressed(b);
-    if (b.item.cost > 0) { clickerHovered(b); }
+    if (b.item.isUpgrade) {
+      clickerHovered(b);
+    }
   },
 };
 
@@ -151,7 +153,7 @@ const availableItems: Item[] = [
     rate: 0.1,
     description:
       "worker bees are females who collect honey from foraging bees and tend to the bee larvae",
-    isUpgrade: true
+    isUpgrade: true,
   },
   {
     name: "drone",
@@ -159,7 +161,7 @@ const availableItems: Item[] = [
     rate: 2,
     description:
       "drone bees are males who try to mate with the queen and then die",
-    isUpgrade: true
+    isUpgrade: true,
   },
   {
     name: "queen",
@@ -167,7 +169,7 @@ const availableItems: Item[] = [
     rate: 50,
     description:
       "queen bees lay eggs, fertilizing only some. the unfertilized become drones, and the fertilized become workers or queens",
-    isUpgrade: true
+    isUpgrade: true,
   },
   {
     name: "keeper",
@@ -175,7 +177,7 @@ const availableItems: Item[] = [
     rate: 300,
     description:
       "beekeepers raise and care for colonies, usually in artificial beehives",
-    isUpgrade: true
+    isUpgrade: true,
   },
   {
     name: "oprah",
@@ -183,7 +185,7 @@ const availableItems: Item[] = [
     rate: 1500,
     description:
       "Oprah Winfrey is a media mogul best known for her talk show, The Oprah Winfrey Show",
-    isUpgrade: true
+    isUpgrade: true,
   },
 ];
 
