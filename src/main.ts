@@ -3,35 +3,45 @@ import "./style.css";
 const app: HTMLDivElement = document.querySelector("#app")!;
 const header = document.createElement("h1");
 
-const container = {
-  "main": document.createElement("div"),
-  "upgrades": document.createElement("div"),
-};
-
-for (const c in container) {
-  const column: HTMLDivElement = container[c];
-  app.appendChild(column);
-  column.style.float = "left";
-  column.style.padding = "50px";
-  column.style.display = "flex";
-  column.style.flexDirection = "column";
-  column.style.alignItems = "center";
+/* column organization and main button prominence inspired by:
+ *  > https://github.com/NickCorfmat/cmpm-121-demo-1/blob/main/src/main.ts 
+ *  > https://github.com/egitelma/cmpm-121-demo-1/blob/main/src/main.ts 
+ */
+interface Column {
+  key: string;
+  div: HTMLDivElement;
 }
-container.main.append(header);
+
+const container: Column[] = [];
+
+container.push({ key: "main", div: document.createElement("div") });
+container.push({ key: "upgrades", div: document.createElement("div") });
+const _MAIN = 0;
+const _UPGRADES = 1;
+
+for (let i = 0; i < container.length; i++) {
+  const columnDiv = container[i].div;
+  console.log(columnDiv);
+  app.appendChild(columnDiv);
+  columnDiv.style.float = "left";
+  columnDiv.style.padding = "50px";
+  columnDiv.style.display = "flex";
+  columnDiv.style.flexDirection = "column";
+  columnDiv.style.alignItems = "center";
+}
+container[_MAIN].div.append(header);
 
 // special (oprah gif)
 const oprah = document.createElement("img");
 oprah.src =
   "https://akns-images.eonline.com/eol_images/Entire_Site/2016027/rs_394x222-160127120033-bees.gif?fit=around%7C394:222&output-quality=90&crop=394:222;center,top";
-app.append(oprah);
-oprah.style.display = "none"; // hide oprah
 
 //* constants *//
 const COST_MULTIPLIER = 1.15;
 const MANUAL: Item = {
   name: "🐝",
   cost: -1,
-  rate: 0,
+  rate: 1000000000,
   description: "buzz buzz",
   isUpgrade: false,
 };
@@ -71,9 +81,9 @@ function makeButton(i: Item) {
 
   if (i.name == "🐝") {
     result.button.classList.add("glow-on-hover");
-    container.main.append(result.button);
+    container[_MAIN].div.append(result.button);
   } else {
-    container.upgrades.append(result.button);
+    container[_UPGRADES].div.append(result.button);
   }
   return result;
 }
@@ -119,7 +129,7 @@ function clickerPressed(b: Button) {
   b.button.addEventListener("click", () => {
     if (b.bought) {
       b.bought.value++;
-      container.main.append(b.bought.div);
+      container[_MAIN].div.append(b.bought.div);
     }
 
     clicker.execute(b);
@@ -130,7 +140,11 @@ function clickerPressed(b: Button) {
     }
 
     // SPECIAL: show a video when oprah is clicked
-    if (b.item.name === "oprah") oprah.style.display = "block"; // show iFrame
+    if (b.item.name === "oprah"){
+      document.body.style.backgroundImage = `url(${oprah.src})`;
+      document.body.style.backgroundSize = `${100/b.bought!.value}% ${100/b.bought!.value}%`;
+      console.log();
+    }
   });
 }
 
@@ -215,5 +229,5 @@ clicker.buttons.forEach(clicker.listener);
 
 document.title = config.name;
 header.innerHTML = config.name;
-container.main.append(config.count.display);
-container.main.append(config.growthRate.display);
+container[_MAIN].div.append(config.count.display);
+container[_MAIN].div.append(config.growthRate.display);
