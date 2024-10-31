@@ -3,9 +3,11 @@ import "./style.css";
 const app: HTMLDivElement = document.querySelector("#app")!;
 const header = document.createElement("h1");
 
+const BACKGROUND_COLOR = "255, 166, 0";
+
 /* column organization and main button prominence inspired by:
- *  > https://github.com/NickCorfmat/cmpm-121-demo-1/blob/main/src/main.ts 
- *  > https://github.com/egitelma/cmpm-121-demo-1/blob/main/src/main.ts 
+ *  > https://github.com/NickCorfmat/cmpm-121-demo-1/blob/main/src/main.ts
+ *  > https://github.com/egitelma/cmpm-121-demo-1/blob/main/src/main.ts
  */
 interface Column {
   key: string;
@@ -30,6 +32,7 @@ for (let i = 0; i < container.length; i++) {
   columnDiv.style.alignItems = "center";
 }
 container[_MAIN].div.append(header);
+container[_MAIN].div.style.background = `rgba(${BACKGROUND_COLOR}, 0.8)`;
 
 // special (oprah gif)
 const oprah = document.createElement("img");
@@ -139,11 +142,14 @@ function clickerPressed(b: Button) {
       b.button.innerHTML = `-${b.item.cost.toFixed(1)}`;
     }
 
-    // SPECIAL: show a video when oprah is clicked
-    if (b.item.name === "oprah"){
+    // SPECIAL: show a gif when oprah is clicked
+    /* gif as background image inspired by:
+     * > https://github.com/Cheristic/cmpm-121-demo-1/blob/main/src/style.css
+     */
+    if (b.item.name === "oprah") {
       document.body.style.backgroundImage = `url(${oprah.src})`;
-      document.body.style.backgroundSize = `${100/b.bought!.value}% ${100/b.bought!.value}%`;
-      console.log();
+      document.body.style.backgroundSize = `${100 / b.bought!.value}% ${100 / b.bought!.value}%`;
+      app.style.color = "white";
     }
   });
 }

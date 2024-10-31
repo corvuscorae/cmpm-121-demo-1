@@ -4,4 +4,13 @@ button rainbow glow on hover source:
 
 > https://codepen.io/kocsten/pen/rggjXp
 
-column organization and main button prominence inspired by: > https://github.com/NickCorfmat/cmpm-121-demo-1/blob/main/src/main.ts > https://github.com/egitelma/cmpm-121-demo-1/blob/main/src/main.ts
+column organization and main button prominence inspired by: 
+
+> https://github.com/NickCorfmat/cmpm-121-demo-1/blob/main/src/main.ts 
+
+> https://github.com/egitelma/cmpm-121-demo-1/blob/main/src/main.ts
+
+
+gif as background image inspired by:
+
+    > https://github.com/Cheristic/cmpm-121-demo-1/blob/main/src/style.css
