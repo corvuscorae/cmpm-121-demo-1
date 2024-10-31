@@ -44,7 +44,7 @@ const COST_MULTIPLIER = 1.15;
 const MANUAL: Item = {
   name: "🐝",
   cost: -1,
-  rate: 1000000000,
+  rate: 0,
   description: "buzz buzz",
   isUpgrade: false,
 };
