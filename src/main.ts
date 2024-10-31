@@ -2,7 +2,22 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 const header = document.createElement("h1");
-app.append(header);
+
+const container = {
+  "main": document.createElement("div"),
+  "upgrades": document.createElement("div"),
+};
+
+for (const c in container) {
+  const column: HTMLDivElement = container[c];
+  app.appendChild(column);
+  column.style.float = "left";
+  column.style.padding = "50px";
+  column.style.display = "flex";
+  column.style.flexDirection = "column";
+  column.style.alignItems = "center";
+}
+container.main.append(header);
 
 // special (oprah gif)
 const oprah = document.createElement("img");
@@ -53,12 +68,13 @@ function makeButton(i: Item) {
 
   result.button.innerHTML = result.item.name;
   result.button.title = result.item.description;
-  app.append(result.button);
 
-  if(i.name == "🐝"){ 
+  if (i.name == "🐝") {
     result.button.classList.add("glow-on-hover");
+    container.main.append(result.button);
+  } else {
+    container.upgrades.append(result.button);
   }
-
   return result;
 }
 
@@ -103,7 +119,7 @@ function clickerPressed(b: Button) {
   b.button.addEventListener("click", () => {
     if (b.bought) {
       b.bought.value++;
-      app.append(b.bought.div);
+      container.main.append(b.bought.div);
     }
 
     clicker.execute(b);
@@ -199,5 +215,5 @@ clicker.buttons.forEach(clicker.listener);
 
 document.title = config.name;
 header.innerHTML = config.name;
-app.append(config.count.display);
-app.append(config.growthRate.display);
+container.main.append(config.count.display);
+container.main.append(config.growthRate.display);
