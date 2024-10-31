@@ -53,8 +53,11 @@ function makeButton(i: Item) {
 
   result.button.innerHTML = result.item.name;
   result.button.title = result.item.description;
-
   app.append(result.button);
+
+  if(i.name == "🐝"){ 
+    result.button.classList.add("glow-on-hover");
+  }
 
   return result;
 }
